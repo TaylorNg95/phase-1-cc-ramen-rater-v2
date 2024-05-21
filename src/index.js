@@ -1,4 +1,5 @@
 // index.js
+const imageDiv = document.querySelector('#ramen-menu')
 
 // Callbacks
 const handleClick = (ramen) => {
@@ -10,11 +11,23 @@ const addSubmitListener = () => {
 }
 
 const displayRamens = () => {
-  // Add code
+  fetch('http://localhost:3000/ramens')
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(element => {
+        renderImage(element.image)
+      });
+    })
 };
 
+function renderImage(image){
+  const img = document.createElement('img')
+  img.src = image
+  imageDiv.appendChild(img)
+}
+
 const main = () => {
-  // Invoke displayRamens here
+  displayRamens()
   // Invoke addSubmitListener here
 }
 

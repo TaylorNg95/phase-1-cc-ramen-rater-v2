@@ -207,7 +207,7 @@ describe('handleSubmit', () => {
         const ramenFormRating = document.querySelector("#new-ramen #new-rating");
         const ramenFormComment = document.querySelector("#new-ramen #new-comment");
         const submitButton = document.getElementById('submit-button');
-
+        /* console.log(submitButton) */
         main(ramenForm)
 
         ramenFormName.value = newRamen.name;

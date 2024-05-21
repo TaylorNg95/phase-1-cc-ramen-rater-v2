@@ -1,6 +1,6 @@
 // index.js
-const imageDiv = document.querySelector('#ramen-menu')
-const detailDiv = document.querySelector('#ramen-detail')
+const ramenMenuDiv = document.querySelector('#ramen-menu')
+const newRamenForm = document.querySelector('#new-ramen')
 
 // Callbacks
 const handleClick = (ramen) => {
@@ -13,7 +13,26 @@ const handleClick = (ramen) => {
 };
 
 const addSubmitListener = () => {
-  // Add code
+  newRamenForm.addEventListener('submit', function(event){
+    event.preventDefault()
+
+    const newName = document.querySelector('#new-name').value
+    const newRestaurant = document.querySelector('#new-restaurant').value
+    const newImage = document.querySelector('#new-image').value
+    const newRating = document.querySelector('#new-rating').value
+    const newComment = document.querySelector('#new-comment').value
+
+    const newRamenObject = {
+      name: newName,
+      restaurant: newRestaurant,
+      image: newImage,
+      rating: newRating,
+      comment: newComment
+    }
+
+    createRamenImage(newRamenObject)
+    newRamenForm.reset()
+  })
 }
 
 const displayRamens = () => {
@@ -21,19 +40,23 @@ const displayRamens = () => {
     .then(response => response.json())
     .then(data => {
       data.forEach(ramenObj => {
-        const img = document.createElement('img')
-        img.src = ramenObj.image
-        img.addEventListener('click', function(){
-          handleClick(ramenObj)
-        })
-        imageDiv.appendChild(img)
+        createRamenImage(ramenObj)
       });
     })
 };
 
+function createRamenImage(ramenObj){
+  const img = document.createElement('img')
+  img.src = ramenObj.image
+  img.addEventListener('click', function(){
+    handleClick(ramenObj)
+  })
+  ramenMenuDiv.appendChild(img)
+}
+
 const main = () => {
   displayRamens()
-  // Invoke addSubmitListener here
+  addSubmitListener()
 }
 
 main()

@@ -11,8 +11,8 @@ const handleClick = (ramen) => {
 };
 
 const addSubmitListener = () => {
+  // submit listener for the new ramen form
   const newRamenForm = document.querySelector('#new-ramen')
-  const submitButton = document.querySelector('#submit-button')
   newRamenForm.addEventListener('submit', function(event){
     event.preventDefault()
 
@@ -38,6 +38,30 @@ const addSubmitListener = () => {
     document.querySelector('#ramen-menu').appendChild(img)
     newRamenForm.reset()
   })
+
+  // submit listener for the edit ramen form
+  const editRamenForm = document.querySelector('#edit-ramen')
+  editRamenForm.addEventListener('submit', function(event){
+    event.preventDefault()
+      const editRating = document.querySelector('#edit-rating').value
+      const editComment = document.querySelector('#edit-comment').value
+      if(editRating !== '' && editComment !== ''){
+        let featuredRating = document.querySelector('#rating-display')
+        let featuredComment = document.querySelector('#comment-display')
+        featuredRating.textContent = editRating
+        featuredComment.textContent = editComment
+        editRamenForm.reset()
+      }
+  })
+  
+  // submit listener for the delete ramen button
+  const deleteRamenBtn = document.querySelector('#delete-ramen')
+  deleteRamenBtn.addEventListener('click'), function(event){
+    event.preventDefault()
+
+    // add an alert to ask the user if they for sure want to delete the featured ramen
+
+  }
 }
 
 const displayRamens = () => {
@@ -46,7 +70,8 @@ const displayRamens = () => {
     .then(data => {
       data.forEach(ramenObj => {
         createRamenImage(ramenObj)
-      });
+      })
+      handleClick(data[0]) // nifty way to automatically display the first ramen, as if it had been clicked
     })
 };
 
@@ -60,8 +85,10 @@ function createRamenImage(ramenObj){
 }
 
 const main = () => {
-  displayRamens()
-  addSubmitListener()
+  document.addEventListener('DOMContentLoaded', function(){
+    displayRamens()
+    addSubmitListener()
+  })
 }
 
 main()

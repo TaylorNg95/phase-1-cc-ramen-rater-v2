@@ -1,6 +1,5 @@
 // index.js
 const ramenMenuDiv = document.querySelector('#ramen-menu')
-const newRamenForm = document.querySelector('#new-ramen')
 
 // Callbacks
 const handleClick = (ramen) => {
@@ -13,6 +12,7 @@ const handleClick = (ramen) => {
 };
 
 const addSubmitListener = () => {
+  const newRamenForm = document.querySelector('#new-ramen')
   newRamenForm.addEventListener('submit', function(event){
     event.preventDefault()
 
@@ -51,12 +51,12 @@ function createRamenImage(ramenObj){
   img.addEventListener('click', function(){
     handleClick(ramenObj)
   })
-  ramenMenuDiv.appendChild(img)
+  document.querySelector('#ramen-menu').appendChild(img)
 }
 
 const main = () => {
-  displayRamens()
-  addSubmitListener()
+  /* displayRamens()
+  addSubmitListener() */
 }
 
 main()

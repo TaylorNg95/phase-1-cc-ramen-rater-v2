@@ -30,6 +30,7 @@ function clearMenu(){
 function renderRamen(singleRamen){
   const img = document.createElement('img')
   img.src = singleRamen.image
+  img.dataset.id = singleRamen.id
   img.addEventListener('click', function(){
     handleClick(singleRamen)
   })
@@ -69,6 +70,7 @@ const addSubmitListener = () => {
 
     sendData(newSingleRamen)
     newRamenForm.reset()
+    renderRamen(newSingleRamen)
   })
   
   // submit listener for the edit ramen form
@@ -82,6 +84,7 @@ const addSubmitListener = () => {
   // submit listener for the delete button
   const deleteBtn = document.querySelector('#delete-ramen')
   deleteBtn.addEventListener('click', function(event){
+    event.preventDefault()
     deleteData()
   })
 }
@@ -100,9 +103,22 @@ function sendData(newSingleRamen){
 function updateData(){
   const editRating = document.querySelector('#edit-rating').value
   const editComment = document.querySelector('#edit-comment').value
+  
+  const editID = imageDisplay.dataset.id
+  let newAllRamens = allRamens.map(ramen => {
+    if(ramen.id === editID){
+      ramen.rating = editRating
+      ramen.comment = editComment
+    }
+    return ramen
+  })
+  allRamens = newAllRamens
+
+  ratingDisplay.textContent = editRating
+  commentDisplay.textContent = editComment
 
   if(editRating !== '' && editComment !== ''){
-    fetch(`${baseUrl}/${imageDisplay.dataset.id}`, {
+    fetch(`${baseUrl}/${editID}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -125,6 +141,15 @@ function deleteData(){
         'Accept': 'application/json'
       }
     })
+    allRamens = allRamens.filter(ramen => {
+      ramen.id !== imageDisplay.dataset.id
+      return ramen
+    })
+    /* document.querySelector(`[data-id="${imageDisplay.dataset.id}"]`).remove()
+    ratingDisplay.textContent = allRamens[0].rating
+    commentDisplay.textContent = allRamens[0].comment */
+    document.querySelector(`[data-id="${imageDisplay.dataset.id}"]`).remove()
+    handleClick(allRamens[0])
   }
 }
 
@@ -138,9 +163,9 @@ const main = () => {
 main()
 
 // Export functions for testing
-export {
+/* export {
   displayRamens,
   addSubmitListener,
   handleClick,
   main,
-};
+}; */

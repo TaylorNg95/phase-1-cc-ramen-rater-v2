@@ -2,18 +2,53 @@
 const baseUrl = 'http://localhost:3000/ramens'
 let allRamens
 
-// Callbacks
-const handleClick = (ramen) => {
-  // Add code
-  document.querySelector('.detail-image').src = ramen.image
-  document.querySelector('.name').textContent = ramen.name
-  document.querySelector('.restaurant').textContent = ramen.restaurant
-  document.querySelector('#rating-display').textContent = ramen.rating
-  document.querySelector('#comment-display').textContent = ramen.comment
+const ramenMenuDiv = document.querySelector('#ramen-menu')
+const imageDisplay = document.querySelector('.detail-image')
+const ratingDisplay = document.querySelector('#rating-display')
+const commentDisplay = document.querySelector('#comment-display')
+
+
+// fetch data from db.json using GET request
+const displayRamens = () => {
+  fetch(baseUrl)
+    .then(response => response.json())
+    .then(data => {
+      clearMenu() // the page will eventually get re-rendered after each POST request
+      data.forEach(singleRamen => {
+        renderRamen(singleRamen)
+      })
+      allRamens = data
+      handleClick(allRamens[0]) // nifty way to automatically display the first ramen, as if it had been clicked
+    })
 };
 
+function clearMenu(){
+  ramenMenuDiv.innerHTML = ''
+}
+
+// render each ramen image into the ramen menu div and add a click event to each
+function renderRamen(singleRamen){
+  const img = document.createElement('img')
+  img.src = singleRamen.image
+  img.addEventListener('click', function(){
+    handleClick(singleRamen)
+  })
+  ramenMenuDiv.appendChild(img)
+}
+
+// when click event happens, display the details of the pertinent ramen
+const handleClick = (singleRamen) => {
+  imageDisplay.src = singleRamen.image
+  imageDisplay.dataset.id = singleRamen.id
+  
+  document.querySelector('.name').textContent = singleRamen.name
+  document.querySelector('.restaurant').textContent = singleRamen.restaurant
+  ratingDisplay.textContent = singleRamen.rating
+  commentDisplay.textContent = singleRamen.comment
+};
+
+// send data to db.json via a POST request
 const addSubmitListener = () => {
-  // submit listener for the new ramen form
   const newRamenForm = document.querySelector('#new-ramen')
   newRamenForm.addEventListener('submit', function(event){
     event.preventDefault()
@@ -32,54 +67,65 @@ const addSubmitListener = () => {
       comment: newComment
     }
 
-    createRamenImage(newSingleRamen)
+    sendData(newSingleRamen)
     newRamenForm.reset()
   })
-
+  
   // submit listener for the edit ramen form
   const editRamenForm = document.querySelector('#edit-ramen')
   editRamenForm.addEventListener('submit', function(event){
     event.preventDefault()
-      const editRating = document.querySelector('#edit-rating').value
-      const editComment = document.querySelector('#edit-comment').value
-      if(editRating !== '' && editComment !== ''){
-        let featuredRating = document.querySelector('#rating-display')
-        let featuredComment = document.querySelector('#comment-display')
-        featuredRating.textContent = editRating
-        featuredComment.textContent = editComment
-        editRamenForm.reset()
-      }
+    updateData()
+    editRamenForm.reset()
   })
-  
-  // submit listener for the delete ramen button
-  /* const deleteRamenBtn = document.querySelector('#delete-ramen')
-  deleteRamenBtn.addEventListener('click'), function(event){
-    event.preventDefault()
 
-    // add an alert to ask the user if they for sure want to delete the featured ramen
-
-  } */
+  // submit listener for the delete button
+  const deleteBtn = document.querySelector('#delete-ramen')
+  deleteBtn.addEventListener('click', function(event){
+    deleteData()
+  })
 }
 
-const displayRamens = () => {
-  fetch(baseUrl)
-    .then(response => response.json())
-    .then(data => {
-      data.forEach(singleRamen => {
-        createRamenImage(singleRamen)
-      })
-      allRamens = data
-      handleClick(allRamens[0]) // nifty way to automatically display the first ramen, as if it had been clicked
-    })
-};
-
-function createRamenImage(singleRamen){
-  const img = document.createElement('img')
-  img.src = singleRamen.image
-  img.addEventListener('click', function(){
-    handleClick(singleRamen)
+function sendData(newSingleRamen){
+  fetch(baseUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(newSingleRamen)
   })
-  document.querySelector('#ramen-menu').appendChild(img)
+}
+
+function updateData(){
+  const editRating = document.querySelector('#edit-rating').value
+  const editComment = document.querySelector('#edit-comment').value
+
+  if(editRating !== '' && editComment !== ''){
+    fetch(`${baseUrl}/${imageDisplay.dataset.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        rating: editRating,
+        comment: editComment
+      })
+    })
+  }
+}
+
+function deleteData(){
+  const result = confirm('Are you sure you would like to delete this ramen?')
+  if(result){
+    fetch(`${baseUrl}/${imageDisplay.dataset.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+  }
 }
 
 const main = () => {

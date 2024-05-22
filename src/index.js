@@ -1,4 +1,6 @@
 // index.js
+const baseUrl = 'http://localhost:3000/ramens'
+let allRamens
 
 // Callbacks
 const handleClick = (ramen) => {
@@ -22,7 +24,7 @@ const addSubmitListener = () => {
     const newRating = document.querySelector('#new-rating').value
     const newComment = document.querySelector('#new-comment').value
 
-    const newRamenObject = {
+    const newSingleRamen = {
       name: newName,
       restaurant: newRestaurant,
       image: newImage,
@@ -30,12 +32,7 @@ const addSubmitListener = () => {
       comment: newComment
     }
 
-    const img = document.createElement('img')
-    img.src = newImage
-    img.addEventListener('click', function(){
-      handleClick(newRamenObject)
-    })
-    document.querySelector('#ramen-menu').appendChild(img)
+    createRamenImage(newSingleRamen)
     newRamenForm.reset()
   })
 
@@ -55,31 +52,32 @@ const addSubmitListener = () => {
   })
   
   // submit listener for the delete ramen button
-  const deleteRamenBtn = document.querySelector('#delete-ramen')
+  /* const deleteRamenBtn = document.querySelector('#delete-ramen')
   deleteRamenBtn.addEventListener('click'), function(event){
     event.preventDefault()
 
     // add an alert to ask the user if they for sure want to delete the featured ramen
 
-  }
+  } */
 }
 
 const displayRamens = () => {
-  fetch('http://localhost:3000/ramens')
+  fetch(baseUrl)
     .then(response => response.json())
     .then(data => {
-      data.forEach(ramenObj => {
-        createRamenImage(ramenObj)
+      data.forEach(singleRamen => {
+        createRamenImage(singleRamen)
       })
-      handleClick(data[0]) // nifty way to automatically display the first ramen, as if it had been clicked
+      allRamens = data
+      handleClick(allRamens[0]) // nifty way to automatically display the first ramen, as if it had been clicked
     })
 };
 
-function createRamenImage(ramenObj){
+function createRamenImage(singleRamen){
   const img = document.createElement('img')
-  img.src = ramenObj.image
+  img.src = singleRamen.image
   img.addEventListener('click', function(){
-    handleClick(ramenObj)
+    handleClick(singleRamen)
   })
   document.querySelector('#ramen-menu').appendChild(img)
 }
